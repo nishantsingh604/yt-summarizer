@@ -1,0 +1,127 @@
+{% comment %} added a better version of the index.html file {% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Youtube Summarizer</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <style>
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .load {
+      width: 80px;
+      height: 80px;
+      margin: 30px auto 0;
+      border: solid 10px #8822aa;
+      border-radius: 50%;
+      border-right-color: transparent;
+      border-bottom-color: transparent;
+      animation: rotate 1s linear infinite;
+      display: none;
+    }
+  </style>
+</head>
+<body class="flex flex-col bg-gray-100 font-sans antialiased min-h-screen">
+  <nav class="bg-black p-4 text-white flex justify-between">
+    <h1 class="text-3xl font-bold">Youtube Video Summarizer</h1>
+    <div class="mt-1 text-lg">
+      <a href="login.html" class="text-white hover:underline mx-4">Welcome {{ user.username }}</a>
+      <a href="all-sum.html" class="text-white hover:underline mx-4">Saved Video Summaries</a>
+      <a href="login.html" class="text-white hover:underline">Logout</a>
+    </div>
+  </nav>
+
+  <main class="flex-grow container mx-auto mt-10 px-4 sm:px-0">
+    <div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md hover:scale-[1.01] transition-transform">
+      <div class="text-center">
+        <h2 class="text-2xl font-semibold mb-4">Welcome to Youtube Summarizer 🙋‍♂️</h2>
+        <p class="text-gray-700">
+          This Python-based YouTube Summarizer extracts the transcript of any YouTube video and generates a concise summary using AI.
+          It uses the youtube-transcript-api and Hugging Face's transformers to summarize content.
+          Perfect for understanding long lectures, interviews, or tutorials without watching the whole thing.
+        </p>
+      </div>
+
+      <div class="mt-8">
+        <h2 class="text-2xl font-semibold mb-4">Enter the Youtube Link You Wish to Summarize</h2>
+        <div class="flex items-center space-x-4">
+          <input
+            id="youtubelink"
+            type="url"
+            placeholder="Enter the YouTube Link"
+            class="flex-grow p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+          <button
+            id="generateblogbutton"
+            class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-800 transition"
+          >
+            Summarize
+          </button>
+        </div>
+      </div>
+
+      <div id="loading-circle" class="load"></div>
+
+      <section class="mt-10">
+        <h2 class="text-xl mb-4 font-semibold">The Generated Summary:</h2>
+        <div id="blogContent" class="mt-2 text-gray-700 space-y-4"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="text-center p-4 bg-gray-200 text-black text-md">
+    <span>Created by Nishant Singh :)</span>
+    <span class="ml-10"><a href="https://github.com/nishantsingh604">➡️ My Portfolio</a></span>
+  </footer>
+
+  <script>
+    document.getElementById('generateblogbutton').addEventListener('click', async () => {
+      const youtubeLink = document.getElementById('youtubelink').value;
+      const blogContent = document.getElementById('blogContent');
+      const spinner = document.getElementById('loading-circle');
+      const button = document.getElementById('generateblogbutton');
+
+      if (!youtubeLink) {
+        alert("Please enter a YouTube link.");
+        return;
+      }
+
+      // Start loading
+      spinner.style.display = 'block';
+      button.disabled = true;
+      button.innerText = "Summarizing...";
+      blogContent.innerHTML = '';
+
+      try {
+        const response = await fetch('/generate-blog', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ link: youtubeLink })
+        });
+
+        const data = await response.json();
+
+        if (data?.content) {
+          blogContent.innerHTML = `<p>${data.content}</p>`;
+        } else {
+          blogContent.innerHTML = `<p class="text-red-500">Could not generate summary. Try again.</p>`;
+        }
+
+      } catch (error) {
+        console.error("Error occurred:", error);
+        blogContent.innerHTML = `<p class="text-red-500">Something went wrong. Please try again later.</p>`;
+      } finally {
+        spinner.style.display = 'none';
+        button.disabled = false;
+        button.innerText = "Summarize";
+      }
+    });
+  </script>
+</body>
+</html>

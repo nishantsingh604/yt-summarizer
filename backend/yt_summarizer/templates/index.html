@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Youtube Summarizer</title>
+        <link rel="icon" type="image/x-icon" href="/favicon-32x32.png">
+
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
          @keyframes rotate {
@@ -81,7 +83,7 @@ Just input the video URL, and the script will return a neat and readable summary
 
         </div>
 
-            <div  id="loading-circle" class="load"></div>
+            <div style="display:none" id="loading-circle" class="load"></div>
 
 
             <section class="mt-10 flex-grow">
@@ -111,9 +113,9 @@ Just input the video URL, and the script will return a neat and readable summary
             if(youtubeLink) {
                 document.getElementById('loading-circle').style.display = 'block';
                 
-                blogContent.innerHTML = ''; // Clear previous content
+                blogContent.innerHTML = '';
 
-                const endpointUrl = '/generate-blog';
+                const endpointUrl = '/login';
                 
                 try {
                     const response = await fetch(endpointUrl, {
@@ -143,22 +145,18 @@ Just input the video URL, and the script will return a neat and readable summary
     function showLoading() {
         document.getElementById("loading-circle").classList.remove("hidden");
         
-        // Optionally disable the button to prevent multiple clicks
         document.getElementById("generateblogbutton").disabled = true;
         document.getElementById("generateblogbutton").innerText = "Summarizing...";
 
-        // Simulate loading process
-        // Replace this with actual API call logic if needed
         setTimeout(() => {
             document.getElementById("loading-circle").classList.add("hidden");
             document.getElementById("generateblogbutton").disabled = false;
             document.getElementById("generateblogbutton").innerText = "Summarize";
 
-            // Simulated summary
             document.getElementById("blogContent").innerHTML = `
                 <p>This is your generated summary! 🎉</p>
             `;
-        }, 3000); // simulate a 3 second delay
+        }, 3000); 
     }
 </script>
 
