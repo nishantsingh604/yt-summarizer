@@ -11,7 +11,7 @@ from pytube import YouTube
 import os
 import assemblyai as aai
 import openai
-from .models import BlogPost
+from .models import sumPost
 
 # Create your views here.
 @login_required
@@ -19,7 +19,7 @@ def index(request):
     return render(request, 'index.html')
 
 @csrf_exempt
-def generate_blog(request):
+def generate_sum(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -37,22 +37,22 @@ def generate_blog(request):
             return JsonResponse({'error': " Failed to get transcript"}, status=500)
 
 
-        # use OpenAI to generate the blog
-        blog_content = generate_blog_from_transcription(transcription)
-        if not blog_content:
-            return JsonResponse({'error': " Failed to generate blog article"}, status=500)
+        # use OpenAI to generate the sum
+        sum_content = generate_sum_from_transcription(transcription)
+        if not sum_content:
+            return JsonResponse({'error': " Failed to generate sum article"}, status=500)
 
-        # save blog article to database
-        new_blog_article = BlogPost.objects.create(
+        # save sum article to database
+        new_sum_article = SumPost.objects.create(
             user=request.user,
             youtube_title=title,
             youtube_link=yt_link,
-            generated_content=blog_content,
+            generated_content=sum_content,
         )
-        new_blog_article.save()
+        new_sum_article.save()
 
-        # return blog article as a response
-        return JsonResponse({'content': blog_content})
+        # return sum article as a response
+        return JsonResponse({'content': sum_content})
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
 
@@ -79,10 +79,10 @@ def get_transcription(link):
 
     return transcript.text
 
-def generate_blog_from_transcription(transcription):
+def generate_sum_from_transcription(transcription):
     openai.api_key = "your-openai-api-key"
 
-    prompt = f"Based on the following transcript from a YouTube video, write a comprehensive blog article, write it based on the transcript, but dont make it look like a youtube video, make it look like a proper blog article:\n\n{transcription}\n\nArticle:"
+    prompt = f"Based on the following transcript from a YouTube video, write a comprehensive sum article, write it based on the transcript, but dont make it look like a youtube video, make it look like a proper sum article:\n\n{transcription}\n\nArticle:"
 
     response = openai.Completion.create(
         model="text-davinci-003",
@@ -96,14 +96,14 @@ def generate_blog_from_transcription(transcription):
 
 
 
-def blog_list(request):
-    blog_articles = BlogPost.objects.filter(user=request.user)
-    return render(request, "all-sum.html", {'blog_articles': blog_articles})
+def sum_list(request):
+    sum_articles = sumPost.objects.filter(user=request.user)
+    return render(request, "all-sum.html", {'sum_articles': sum_articles})
 
-def blog_details(request, pk):
-    blog_article_detail = BlogPost.objects.get(id=pk)
-    if request.user == blog_article_detail.user:
-        return render(request, 'blog-details.html', {'blog_article_detail': blog_article_detail})
+def sum_details(request, pk):
+    sum_article_detail = sumPost.objects.get(id=pk)
+    if request.user == sum_article_detail.user:
+        return render(request, 'sum-details.html', {'sum_article_detail': sum_article_detail})
     else:
         return redirect('/')
 

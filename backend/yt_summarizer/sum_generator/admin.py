@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import BlogPost
+from .models import SumPost
 
 # Register your models here.
-admin.site.register(BlogPost)
+admin.site.register(SumPost)

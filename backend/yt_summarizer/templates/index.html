@@ -53,9 +53,9 @@
             <h1 class="text-3xl font-bold">Youtube Video Summarizer</h1>
         </div>
         <div class="mt-1 text-lg">
-            <a href="#" class="text-white hover:underline mx-4">Welcome {{ # }}</a>
-            <a href="/blog-list" class="text-white hover:underline mx-4">Saved Video Summaries</a>
-            <a href="#" class="text-white hover:underline">Logout</a>
+ <a href="login.html" class="text-white hover:underline mx-4">Welcome {{ user.username }}</a>
+             <a href="all-sum.html" class="text-white hover:underline mx-4">Saved Video Summaries</a>
+            <a href="login.html" class="text-white hover:underline">Logout</a>
         </div>
     </nav>
 
@@ -64,7 +64,9 @@
 
             <div class="text-center">
             <h2  class="text-2xl font-semibold mb-4">Welcome to Youtube Summarizer 🙋‍♂️</h2>
-            <p class="text-gray-700">Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci, molestias provident voluptates, quibusdam repellendus in est aperiam maxime quaerat, voluptate perspiciatis. Exercitationem facilis, dolores vitae laboriosam neque quam quisquam officia temporibus tempora nemo! Quis totam iure, atque, fugit aperiam nihil repellat accusamus nam reiciendis a veritatis impedit sapiente, officiis doloremque?</p>
+            <p class="text-gray-700">This Python-based YouTube Summarizer extracts the transcript of any YouTube video and generates a concise summary using AI. It uses the youtube-transcript-api to fetch subtitles and Hugging Face's transformers library to summarize the content intelligently.
+
+Just input the video URL, and the script will return a neat and readable summary of what the video is about — perfect for quickly understanding long lectures, interviews, or tutorials without watching the whole thing.</p>
         </div>
 
         <br>
@@ -73,13 +75,13 @@
             <div class="space flex-x-4">
                 <input id="youtubelink" type="url" placeholder="Enter the Youtube Link" class="w-4/5 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                 
-                <button id="generateblogbutton" class="bg-blue-600 text-white px-5 py-2  ml-3 rounded-lg hover:bg-blue-800 transition-colors ">Summarize</button>
+                <button id="generateblogbutton" class="bg-blue-600 text-white px-5 py-2  ml-3 rounded-lg hover:bg-blue-800 transition-colors " onclick="showLoading()">Summarize</button>
             </div>
 
 
         </div>
 
-            <div style="display: none;" id="loading-circle" class="load"></div>
+            <div  id="loading-circle" class="load"></div>
 
 
             <section class="mt-10 flex-grow">
@@ -96,5 +98,69 @@
             
         <h2 class="ml-10" style="display: inline;"  ><a href="https://github.com/nishantsingh604"> ➡️ My Portfolio</a></h2>
     </footer>
+
+
+
+      <script>
+        document.getElementById('generateBlogButton').addEventListener('click', async () => {
+            
+
+            const youtubeLink = document.getElementById('youtubeLink').value;
+            const blogContent = document.getElementById('blogContent');
+            
+            if(youtubeLink) {
+                document.getElementById('loading-circle').style.display = 'block';
+                
+                blogContent.innerHTML = ''; // Clear previous content
+
+                const endpointUrl = '/generate-blog';
+                
+                try {
+                    const response = await fetch(endpointUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ link: youtubeLink })
+                    });
+
+                    const data = await response.json();
+
+                    blogContent.innerHTML = data.content;
+
+                } catch (error) {
+                    console.error("Error occurred:", error);
+                    alert("Something went wrong. Please try again later.");
+                    
+                }
+                document.getElementById('loading-circle').style.display = 'none';
+            } else {
+                alert("Please enter a YouTube link.");
+            }
+        });
+    </script>
+    <script>
+    function showLoading() {
+        document.getElementById("loading-circle").classList.remove("hidden");
+        
+        // Optionally disable the button to prevent multiple clicks
+        document.getElementById("generateblogbutton").disabled = true;
+        document.getElementById("generateblogbutton").innerText = "Summarizing...";
+
+        // Simulate loading process
+        // Replace this with actual API call logic if needed
+        setTimeout(() => {
+            document.getElementById("loading-circle").classList.add("hidden");
+            document.getElementById("generateblogbutton").disabled = false;
+            document.getElementById("generateblogbutton").innerText = "Summarize";
+
+            // Simulated summary
+            document.getElementById("blogContent").innerHTML = `
+                <p>This is your generated summary! 🎉</p>
+            `;
+        }, 3000); // simulate a 3 second delay
+    }
+</script>
+
 </body>
 </html>
