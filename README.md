@@ -6,7 +6,6 @@
 
 ## 🚀 Features
 
-- **Automatic Transcript Retrieval**: Just paste a YouTube URL—our backend fetches the video transcript automatically (if available).
 - **Smart Summarization**: Using OpenAI's GPT models, the tool condenses video transcripts into coherent summaries, preserving key ideas.
 - **Clean and Simple UI**: Designed for ease of use, the interface guides you from input to summary in a few intuitive steps.
 - **Fast & Lightweight**: Optimized for speed, the app delivers summaries in seconds without unnecessary bloat.
